@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +40,13 @@ public class ProblemController {
     @GetMapping("/{id}")
     public Optional<Problem> getProblemById(@PathVariable Long id) {
         return problemService.getProblemById(id);
+    }
+
+    // Update a problem
+    @PutMapping("/{id}")
+    public Problem updateProblem(@PathVariable Long id, @RequestBody Problem updatedProblem) {
+        updatedProblem.setId(id);
+        return problemService.saveProblem(updatedProblem);
     }
 
     // Delete a problem

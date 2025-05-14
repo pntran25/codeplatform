@@ -14,6 +14,8 @@ public class Problem {
     private String title;
     private String description;
 
+    
+
     // Getter for id
     public Long getId() {
         return id;
