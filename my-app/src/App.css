@@ -1,0 +1,46 @@
+.leetcode-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #18181a;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px #00000033;
+  font-family: 'Segoe UI', sans-serif;
+}
+.problem-section {
+  margin-bottom: 24px;
+}
+.editor-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.input-section textarea {
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px;
+  border-radius: 4px;
+  border: none;
+  resize: vertical;
+}
+button {
+  padding: 10px 24px;
+  background: #2e7dff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+button:disabled {
+  background: #888;
+  cursor: not-allowed;
+}
+.output-section {
+  margin-top: 12px;
+  background: #23232b;
+  padding: 12px;
+  border-radius: 4px;
+  min-height: 40px;
+}

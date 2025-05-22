@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.codeplatform.model.Problem;
+import com.example.codeplatform.model.TestCase;
+import com.example.codeplatform.repository.TestCaseRepo;
 import com.example.codeplatform.service.ProblemService;
 
 @RestController
@@ -20,8 +22,11 @@ import com.example.codeplatform.service.ProblemService;
 public class ProblemController {
 
     private final ProblemService problemService;
-    public ProblemController(ProblemService problemService) {
+    private final TestCaseRepo testCaseRepo;
+
+    public ProblemController(ProblemService problemService, TestCaseRepo testCaseRepo) {
         this.problemService = problemService;
+        this.testCaseRepo = testCaseRepo;
     }
 
     // Create a new problem
@@ -53,5 +58,28 @@ public class ProblemController {
     @DeleteMapping("/{id}")
     public void deleteProblem(@PathVariable Long id) {
         problemService.deleteProblem(id);
+    }
+
+    // Add test case to a problem
+    @PostMapping("/{problemId}/testcases")
+    public TestCase addTestCaseToProblem(@PathVariable Long problemId, @RequestBody TestCase testCase) {
+        Problem problem = problemService.getProblemById(problemId).orElseThrow();
+        testCase.setProblem(problem);
+        return testCaseRepo.save(testCase);
+    }
+
+    // Update a test case for a problem
+    @PutMapping("/{problemId}/testcases/{testCaseId}")
+    public TestCase updateTestCaseForProblem(@PathVariable Long problemId, @PathVariable Long testCaseId, @RequestBody TestCase updatedTestCase) {
+        Problem problem = problemService.getProblemById(problemId).orElseThrow();
+        updatedTestCase.setId(testCaseId);
+        updatedTestCase.setProblem(problem);
+        return testCaseRepo.save(updatedTestCase);
+    }
+
+    // Delete a test case for a problem
+    @DeleteMapping("/{problemId}/testcases/{testCaseId}")
+    public void deleteTestCaseForProblem(@PathVariable Long problemId, @PathVariable Long testCaseId) {
+        testCaseRepo.deleteById(testCaseId);
     }
 }
