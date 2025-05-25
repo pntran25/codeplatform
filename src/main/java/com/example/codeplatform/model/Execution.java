@@ -20,7 +20,7 @@ public class Execution {
 
     @ManyToOne
     @JoinColumn(name = "problem_id", nullable = false)
-    @com.fasterxml.jackson.annotation.JsonBackReference`
+    @com.fasterxml.jackson.annotation.JsonBackReference
     private Problem problem;
 
     @ManyToOne
