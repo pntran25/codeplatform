@@ -60,6 +60,7 @@ public class ExecutionController {
         codeBuilder.append(functionSignature).append("\n");
         codeBuilder.append(functionBody).append("\n\n");
         for (TestCase tc : testCases) {
+            // Only accept return value, not print inside user function
             codeBuilder.append("print(")
                 .append(functionName)
                 .append("(")
@@ -80,8 +81,18 @@ public class ExecutionController {
             r.put("input", testCases.get(i).getInput());
             r.put("expected", testCases.get(i).getExpected());
             r.put("actual", i < outputs.length ? outputs[i] : null);
-            r.put("pass", i < outputs.length && outputs[i].equals(String.valueOf(testCases.get(i).getExpected())));
+            // Only pass if actual matches expected and user did NOT use print in their function
+            boolean pass = i < outputs.length && outputs[i].equals(String.valueOf(testCases.get(i).getExpected()));
+            r.put("pass", pass);
             caseResults.add(r);
+        }
+
+        // Check for print in user function and mark all as fail if found
+        if (functionBody.contains("print(")) {
+            for (Map<String, Object> r : caseResults) {
+                r.put("pass", false);
+                r.put("error", "Do not use print in your function. Use return instead.");
+            }
         }
 
         // Save execution (optional, you can keep this logic)

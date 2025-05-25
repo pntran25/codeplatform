@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, useParams } from "react-router-dom";
 import MonacoEditor from "@monaco-editor/react";
 import axios from "axios";
 import Admin from "./Admin";
 import "./App.css";
 
-function ProblemList({ onSelect }) {
+function ProblemList() {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -18,24 +18,28 @@ function ProblemList({ onSelect }) {
       .catch(() => setLoading(false));
   }, []);
 
-  if (loading) return <div>Loading problems...</div>;
-  if (!problems.length) return <div>No problems found.</div>;
+  if (loading) return <div className="main-card">Loading problems...</div>;
+  if (!problems.length) return <div className="main-card">No problems found.</div>;
 
   return (
-    <div style={{ margin: '32px 0' }}>
-      <h2>Available Problems</h2>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+    <div className="main-card" style={{ marginTop: 40 }}>
+      <h1 className="site-title">CodePlatform</h1>
+      <p style={{ color: '#bbb', marginBottom: 32 }}>Sharpen your coding skills. Select a problem to get started!</p>
+      <ul className="problem-list">
         {problems.map(p => (
-          <button key={p.id} onClick={() => onSelect(p.id)} style={{ padding: 16, minWidth: 180 }}>
-            {p.title}
-          </button>
+          <li key={p.id}>
+            <Link to={`/problems/${p.id}`} className="problem-link">
+              {p.title}
+            </Link>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }
 
-function CodingPlatform({ problemId }) {
+function CodingPlatform() {
+  const { problemId } = useParams();
   const [problem, setProblem] = useState(null);
   const [functionBody, setFunctionBody] = useState("");
   const [output, setOutput] = useState("");
@@ -43,6 +47,7 @@ function CodingPlatform({ problemId }) {
   const [results, setResults] = useState([]);
 
   useEffect(() => {
+    if (!problemId) return;
     axios.get(`/api/problems/${problemId}`)
       .then(res => {
         if (!res.data) {
@@ -71,7 +76,7 @@ function CodingPlatform({ problemId }) {
     try {
       const response = await axios.post("/api/execute", {
         functionBody,
-        problemId: problem.id,
+        problemId,
         userId: 1
       });
       setOutput(response.data.rawOutput || "");
@@ -82,15 +87,15 @@ function CodingPlatform({ problemId }) {
     setLoading(false);
   };
 
-  if (!problem) return <div>Loading...</div>;
+  if (!problem) return <div className="leetcode-container">Loading...</div>;
 
   return (
     <div className="leetcode-container">
       <div className="problem-section">
-        <h2>{problem.title}</h2>
-        <p>{problem.description}</p>
+        <h2 style={{ color: '#2e7dff', fontWeight: 700 }}>{problem.title}</h2>
+        <p style={{ color: '#bbb' }}>{problem.description}</p>
         <pre><b>Function Signature:</b> {problem.functionSignature}</pre>
-        <div style={{color: '#ffb347', marginBottom: 8}}>
+        <div style={{color: '#ffb347', marginBottom: 8, fontWeight: 500}}>
           <b>Note:</b> Your function <u>must use <code>return</code></u> to output the answer. Do <b>not</b> use <code>print</code>.
         </div>
         {problem.testCases && Array.isArray(problem.testCases) && problem.testCases.length > 0 && (
@@ -117,7 +122,7 @@ function CodingPlatform({ problemId }) {
           }}
           theme="vs-dark"
         />
-        <button onClick={handleRunCode} disabled={loading}>
+        <button className="run-btn" onClick={handleRunCode} disabled={loading}>
           {loading ? "Running..." : "Run Code"}
         </button>
         <div className="output-section">
@@ -126,6 +131,7 @@ function CodingPlatform({ problemId }) {
             {results.map((r, i) => (
               <li key={i} style={{ color: r.pass ? "lightgreen" : "salmon" }}>
                 Input: {JSON.stringify(r.input)} | Expected: {JSON.stringify(r.expected)} | Got: {JSON.stringify(r.actual)} | {r.pass ? "PASS" : "FAIL"}
+                {r.error && <span style={{ color: 'orange', marginLeft: 8 }}>({r.error})</span>}
               </li>
             ))}
           </ul>
@@ -137,24 +143,17 @@ function CodingPlatform({ problemId }) {
           )}
         </div>
       </div>
-      {console.log("testCases:", problem.testCases)}
     </div>
   );
 }
 
 function App() {
-  const [selectedProblemId, setSelectedProblemId] = useState(null);
-
   return (
     <Router>
       <Routes>
         <Route path="/admin" element={<Admin />} />
-        <Route path="/" element={
-          <div>
-            <ProblemList onSelect={setSelectedProblemId} />
-            {selectedProblemId && <CodingPlatform problemId={selectedProblemId} />}
-          </div>
-        } />
+        <Route path="/problems/:problemId" element={<CodingPlatform />} />
+        <Route path="/" element={<ProblemList />} />
       </Routes>
     </Router>
   );

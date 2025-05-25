@@ -1,11 +1,63 @@
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #18181a 0%, #23232b 100%);
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding-bottom: 40px;
+}
+
+.main-card {
+  max-width: 700px;
+  margin: 0 auto;
+  background: #23232b;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px #0008;
+  padding: 32px;
+}
+
+h1.site-title {
+  font-weight: 700;
+  font-size: 36px;
+  margin-bottom: 8px;
+  color: #2e7dff;
+  letter-spacing: 1px;
+}
+
+ul.problem-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul.problem-list li {
+  margin-bottom: 18px;
+}
+
+a.problem-link {
+  font-size: 22px;
+  text-decoration: none;
+  color: #fff;
+  background: #2e7dff;
+  padding: 14px 28px;
+  border-radius: 8px;
+  display: inline-block;
+  box-shadow: 0 2px 8px #0004;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+a.problem-link:hover {
+  background: #1a4fa0;
+}
+
 .leetcode-container {
   max-width: 900px;
   margin: 40px auto;
-  padding: 24px;
-  background: #18181a;
+  padding: 32px;
+  background: #23232b;
   color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px #00000033;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px #0008;
   font-family: 'Segoe UI', sans-serif;
 }
 .problem-section {
@@ -16,31 +68,42 @@
   flex-direction: column;
   gap: 16px;
 }
-.input-section textarea {
-  width: 100%;
-  margin-top: 4px;
-  padding: 8px;
-  border-radius: 4px;
-  border: none;
-  resize: vertical;
+pre, code {
+  background: #18181a;
+  color: #fff;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 16px;
 }
-button {
-  padding: 10px 24px;
+button, .run-btn {
+  padding: 12px 32px;
   background: #2e7dff;
   color: #fff;
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 2px 8px #0004;
+  margin-top: 18px;
 }
-button:disabled {
+button:disabled, .run-btn:disabled {
   background: #888;
   cursor: not-allowed;
 }
 .output-section {
-  margin-top: 12px;
-  background: #23232b;
-  padding: 12px;
-  border-radius: 4px;
+  margin-top: 24px;
+  background: #18181a;
+  padding: 18px;
+  border-radius: 8px;
   min-height: 40px;
+}
+label {
+  color: #2e7dff;
+  font-weight: 600;
+}
+details > summary {
+  cursor: pointer;
+  color: #2e7dff;
+  font-weight: 500;
 }

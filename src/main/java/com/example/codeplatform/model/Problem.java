@@ -25,6 +25,10 @@ public class Problem {
     @com.fasterxml.jackson.annotation.JsonManagedReference
     private List<TestCase> testCases;
 
+    // Add this for executions relationship
+    @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Execution> executions;
+
     // Getter for id
     public Long getId() {
         return id;
@@ -71,5 +75,12 @@ public class Problem {
 
     public void setStarterCode(String starterCode) {
         this.starterCode = starterCode;
+    }
+
+    public List<Execution> getExecutions() {
+        return executions;
+    }
+    public void setExecutions(List<Execution> executions) {
+        this.executions = executions;
     }
 }
