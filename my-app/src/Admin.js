@@ -1,13 +1,32 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "./axios";
+
+function getRoleFromToken() {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.role || null;
+  } catch {
+    return null;
+  }
+}
 
 function Admin() {
+  
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [functionSignature, setFunctionSignature] = useState("");
   const [starterCode, setStarterCode] = useState("");
   const [testCases, setTestCases] = useState([{ input: "", expected: "" }]);
   const [message, setMessage] = useState("");
+
+  const role = getRoleFromToken();
+  if (role !== 'ADMIN') {
+    return <div style={{textAlign:'center',marginTop:80,color:'#a18fff',fontSize:24}}>Access Denied: Admins Only</div>;
+  }
+
 
   const handleAddTestCase = () => {
     setTestCases([...testCases, { input: "", expected: "" }]);

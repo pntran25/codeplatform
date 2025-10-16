@@ -75,14 +75,21 @@ public class ExecutionController {
         // Parse output and compare to expected
         String rawOutput = (String) result.get("output");
         String[] outputs = rawOutput != null ? rawOutput.trim().split("\\r?\\n") : new String[0];
+
         List<Map<String, Object>> caseResults = new ArrayList<>();
         for (int i = 0; i < testCases.size(); i++) {
             Map<String, Object> r = new HashMap<>();
-            r.put("input", testCases.get(i).getInput());
-            r.put("expected", testCases.get(i).getExpected());
-            r.put("actual", i < outputs.length ? outputs[i] : null);
-            // Only pass if actual matches expected and user did NOT use print in their function
-            boolean pass = i < outputs.length && outputs[i].equals(String.valueOf(testCases.get(i).getExpected()));
+            String input = testCases.get(i).getInput();
+            String expected = testCases.get(i).getExpected();
+            String actual = i < outputs.length ? outputs[i] : null;
+
+            String expectedNorm = normalizeString(expected);
+            String actualNorm = normalizeString(actual);
+
+            r.put("input", input);
+            r.put("expected", expected);
+            r.put("actual", actual);
+            boolean pass = (actualNorm != null && expectedNorm != null && actualNorm.equals(expectedNorm));
             r.put("pass", pass);
             caseResults.add(r);
         }
@@ -114,6 +121,16 @@ public class ExecutionController {
         response.put("rawOutput", rawOutput);
         response.put("error", result.get("error"));
         return response;
+    }
+
+    // Helper to strip quotes from string values
+    private static String normalizeString(String s) {
+        if (s == null) return null;
+        String t = s.trim();
+        if ((t.startsWith("\"") && t.endsWith("\"")) || (t.startsWith("'") && t.endsWith("'"))) {
+            return t.substring(1, t.length() - 1);
+        }
+        return t;
     }
 
     // Helper method to extract function name from signature

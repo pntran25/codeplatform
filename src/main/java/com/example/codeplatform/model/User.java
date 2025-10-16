@@ -16,7 +16,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     private String username;
+    private String password;
+    private String role = "USER"; // Possible values: USER, ADMIN
 
     @OneToMany(mappedBy = "user")
     private List<Submission> submissions;
@@ -45,5 +48,21 @@ public class User {
 
     public void setSubmissions(List<Submission> submissions) {
         this.submissions = submissions;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

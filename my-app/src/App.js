@@ -1,11 +1,15 @@
+
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useParams } from "react-router-dom";
 import MonacoEditor from "@monaco-editor/react";
-import axios from "axios";
+import axios from "./axios";
 import Admin from "./Admin";
 import "./App.css";
+import { useNavigate } from "react-router-dom";
+import Header from "./Header";
 
-function ProblemList() {
+
+function ProblemListPage() {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -18,22 +22,24 @@ function ProblemList() {
       .catch(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="main-card">Loading problems...</div>;
-  if (!problems.length) return <div className="main-card">No problems found.</div>;
-
+  if (loading) return <div className="leetcode-container"> <h1>Loading problems...</h1></div>;
+  if (!problems.length) return <div className="leetcode-container">No problems found.</div>;
+      
   return (
-    <div className="main-card" style={{ marginTop: 40 }}>
-      <h1 className="site-title">CodePlatform</h1>
-      <p style={{ color: '#bbb', marginBottom: 32 }}>Sharpen your coding skills. Select a problem to get started!</p>
-      <ul className="problem-list">
-        {problems.map(p => (
-          <li key={p.id}>
-            <Link to={`/problems/${p.id}`} className="problem-link">
-              {p.title}
-            </Link>
-          </li>
-        ))}
-      </ul>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <div className="leetcode-container" style={{ flex: 1, marginTop: 90 }}>
+        <h2 style={{ color: '#702effff', fontWeight: 700, marginBottom: 24 }}>Problems</h2>
+        <ul className="problem-list">
+          {problems.map(p => (
+            <li key={p.id}>
+              <Link to={`/problems/${p.id}`} className="problem-link">
+                {p.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
@@ -45,6 +51,7 @@ function CodingPlatform() {
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     if (!problemId) return;
@@ -90,61 +97,83 @@ function CodingPlatform() {
   if (!problem) return <div className="leetcode-container">Loading...</div>;
 
   return (
-    <div className="leetcode-container">
-      <div className="problem-section">
-        <h2 style={{ color: '#2e7dff', fontWeight: 700 }}>{problem.title}</h2>
-        <p style={{ color: '#bbb' }}>{problem.description}</p>
-        <pre><b>Function Signature:</b> {problem.functionSignature}</pre>
-        <div style={{color: '#ffb347', marginBottom: 8, fontWeight: 500}}>
-          <b>Note:</b> Your function <u>must use <code>return</code></u> to output the answer. Do <b>not</b> use <code>print</code>.
+    <>
+      <div className="leetcode-container">
+        <div className="top-bar">
+          <div style={{ flex: 1, textAlign: "left" }}>
+            <h2 style={{ color: '#d5d6d8ff', fontWeight: 700 }}>{problem.title}</h2>
+          </div>
+          <button className="back-to-menu-btn" onClick={() => navigate("/problems")}> 
+            ←  Back to Problems
+          </button>
         </div>
-        {problem.testCases && Array.isArray(problem.testCases) && problem.testCases.length > 0 && (
-          <details>
-            <summary>Show Test Cases</summary>
+        <div className="problem-section">
+          <p style={{ color: '#bbb' }}>{problem.description}</p>
+          <pre><b>Function Signature:</b> {problem.functionSignature}</pre>
+          <div style={{color: '#ffb347', marginBottom: 8, fontWeight: 500}}>
+            <b>Note:</b> Your function <u>must use <code>return</code></u> to output the answer. Do <b>not</b> use <code>print</code>.
+          </div>
+          {problem.testCases && Array.isArray(problem.testCases) && problem.testCases.length > 0 && (
+            <details>
+              <summary>Show Test Cases</summary>
+              <ul>
+                {problem.testCases.map((tc, idx) => (
+                  <li key={idx}>
+                    <b>Input:</b> {tc.input} | <b>Expected:</b> {tc.expected}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </div>
+        <div className="editor-section">
+          <MonacoEditor
+            height="300px"
+            defaultLanguage="python"
+            value={problem.functionSignature + "\n" + functionBody}
+            onChange={value => {
+              const lines = value.split("\n");
+              setFunctionBody(lines.slice(1).join("\n"));
+            }}
+            theme="vs-dark"
+          />
+          <button className="run-btn" onClick={handleRunCode} disabled={loading}>
+            {loading ? "Running..." : "Run Code"}
+          </button>
+          <div className="output-section">
+            <label>Test Case Results:</label>
             <ul>
-              {problem.testCases.map((tc, idx) => (
-                <li key={idx}>
-                  <b>Input:</b> {tc.input} | <b>Expected:</b> {tc.expected}
+              {results.map((r, i) => (
+                <li key={i} style={{ color: r.pass ? "lightgreen" : "salmon" }}>
+                  Input: {JSON.stringify(r.input)} | Expected: {JSON.stringify(r.expected)} | Got: {JSON.stringify(r.actual)} | {r.pass ? "PASS" : "FAIL"}
+                  {r.error && <span style={{ color: 'orange', marginLeft: 8 }}>({r.error})</span>}
                 </li>
               ))}
             </ul>
-          </details>
-        )}
-      </div>
-      <div className="editor-section">
-        <MonacoEditor
-          height="300px"
-          defaultLanguage="python"
-          value={problem.functionSignature + "\n" + functionBody}
-          onChange={value => {
-            const lines = value.split("\n");
-            setFunctionBody(lines.slice(1).join("\n"));
-          }}
-          theme="vs-dark"
-        />
-        <button className="run-btn" onClick={handleRunCode} disabled={loading}>
-          {loading ? "Running..." : "Run Code"}
-        </button>
-        <div className="output-section">
-          <label>Test Case Results:</label>
-          <ul>
-            {results.map((r, i) => (
-              <li key={i} style={{ color: r.pass ? "lightgreen" : "salmon" }}>
-                Input: {JSON.stringify(r.input)} | Expected: {JSON.stringify(r.expected)} | Got: {JSON.stringify(r.actual)} | {r.pass ? "PASS" : "FAIL"}
-                {r.error && <span style={{ color: 'orange', marginLeft: 8 }}>({r.error})</span>}
-              </li>
-            ))}
-          </ul>
-          {output && (
-            <>
-              <label>Raw Output:</label>
-              <pre>{output}</pre>
-            </>
-          )}
+            {output && (
+              <>
+                <label>Raw Output:</label>
+                <pre>{output}</pre>
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+    </>
   );
+}
+
+function MainCard() {
+  return (
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 0, flexDirection: 'column' }}>
+      <p style={{ color: "#4334a580", fontSize: 30 }}>this is</p>
+      <h1 className="site-title" style={{ textAlign: 'center'}}>CODEXA</h1>
+      </div>
+    </div>
+    );
 }
 
 function App() {
@@ -153,10 +182,13 @@ function App() {
       <Routes>
         <Route path="/admin" element={<Admin />} />
         <Route path="/problems/:problemId" element={<CodingPlatform />} />
-        <Route path="/" element={<ProblemList />} />
+        <Route path="/problems" element={<ProblemListPage />} />
+        <Route path="/" element={<MainCard />} />
       </Routes>
     </Router>
   );
 }
 
 export default App;
+
+// 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
