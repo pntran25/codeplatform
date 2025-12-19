@@ -28,7 +28,7 @@ function Header() {
             <img
               src={logo}
               alt='Codexa Logo'
-              style={{ width: 40, height: 40, marginTop: 8}} // moved logo down
+              style={{ width: 40, height: 40, marginTop: 16}} // moved logo down
             />
           </Link>
           <Link to="/problems" className="header-tab">Problems</Link>
@@ -36,7 +36,7 @@ function Header() {
         <div style={{ marginRight: 32, display: 'flex', gap: 16 }}>
           {username ? (
             <>
-              <span style={{ color: '#fff', fontFamily: 'Butch Lite', fontWeight: 700, fontSize: 18, marginRight: 8 }}>
+              <span style={{ color: '#fff', fontFamily: 'Gill Sans, "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif', fontWeight: 700, fontSize: 18, marginRight: 8, marginTop: 20 }}>
                 {username}
               </span>
               <button onClick={handleLogout} style={{ background: '#23232b', color: '#fff', border: '1px solid #fff2', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>
@@ -66,15 +66,15 @@ function Header() {
               }}
               onClick={() => setShowLogin(true)}
             >
-              <img src={require('./asset/images/user.png')} alt="Login/Register" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+              <img src={require('./asset/images/user.png')} alt="Login/Register" style={{ width: 42, height: 42, opacity: 0.5 }} />
             </span>
           )}
         </div>
       </div>
       {showLogin && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: '#23232b', borderRadius: 8, boxShadow: '0 2px 16px #0008', position: 'relative' }}>
-            <button onClick={() => setShowLogin(false)} style={{ position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', color: '#fff', fontSize: 22, cursor: 'pointer' }}>&times;</button>
+        <div className="login-overlay">
+          <div className="login-modal">
+            <button onClick={() => setShowLogin(false)} className="login-modal-close">&times;</button>
             <LoginRegister onLogin={handleLogin} />
           </div>
         </div>

@@ -30,7 +30,7 @@ export default function LoginRegister({ onLogin }) {
 
   return (
     <div style={{ maxWidth: 400, margin: 'auto', padding: 20 }}>
-      <h2>{isLogin ? 'Login' : 'Register'}</h2>
+      <h2 style={{ fontFamily: 'Gill Sans, "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif' }}>{isLogin ? 'Login' : 'Register'}</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -49,11 +49,11 @@ export default function LoginRegister({ onLogin }) {
           style={{ width: '100%', marginBottom: 10 }}
         />
         {error && <div style={{ color: 'red', marginBottom: 10 }}>{error}</div>}
-        <button type="submit" style={{ width: '100%' }}>
+        <button type="submit" style={{ width: '100%', fontFamily: 'Gill Sans, "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif'  }}>
           {isLogin ? 'Login' : 'Register'}
         </button>
       </form>
-      <button onClick={() => setIsLogin(!isLogin)} style={{ marginTop: 10, width: '100%' }}>
+      <button onClick={() => setIsLogin(!isLogin)} style={{ marginTop: 10, width: '100%', fontFamily: 'Gill Sans, "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif' }}>
         {isLogin ? 'Need an account? Register' : 'Already have an account? Login'}
       </button>
     </div>

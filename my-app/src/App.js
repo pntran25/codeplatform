@@ -29,7 +29,6 @@ function ProblemListPage() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
       <div className="leetcode-container" style={{ flex: 1, marginTop: 90 }}>
-        <h2 style={{ color: '#702effff', fontWeight: 700, marginBottom: 24 }}>Problems</h2>
         <ul className="problem-list">
           {problems.map(p => (
             <li key={p.id}>
@@ -94,7 +93,7 @@ function CodingPlatform() {
     setLoading(false);
   };
 
-  if (!problem) return <div className="leetcode-container">Loading...</div>;
+  if (!problem) return <div>Loading...</div>;
 
   return (
     <>
@@ -165,11 +164,16 @@ function CodingPlatform() {
 }
 
 function MainCard() {
+  useEffect(() => {
+    document.body.classList.add('no-scroll');
+    return () => document.body.classList.remove('no-scroll');
+  }, []);
+
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 0, flexDirection: 'column' }}>
-      <p style={{ color: "#4334a580", fontSize: 30 }}>this is</p>
+      <p style={{ color: "#4334a580", fontSize: 30, fontFamily: 'Butch Lite'}}>this is</p>
       <h1 className="site-title" style={{ textAlign: 'center'}}>CODEXA</h1>
       </div>
     </div>

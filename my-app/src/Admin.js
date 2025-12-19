@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "./axios";
+import userImage from "./asset/images/guy.png";
 
 function getRoleFromToken() {
   const token = localStorage.getItem('token');
@@ -24,7 +25,18 @@ function Admin() {
 
   const role = getRoleFromToken();
   if (role !== 'ADMIN') {
-    return <div style={{textAlign:'center',marginTop:80,color:'#a18fff',fontSize:24}}>Access Denied: Admins Only</div>;
+    return (
+      <div style={{ textAlign: 'center', marginTop: 80, color: '#a18fff', fontSize: 24 }}>
+        Access Denied: Admins Only
+        <div>
+          <img
+            src={userImage}
+            alt="guy"
+            style={{ width: 300, height: 'auto', marginTop: 16, borderRadius: 8 }}
+          />
+        </div>
+      </div>
+    );
   }
 
 
@@ -42,7 +54,7 @@ function Admin() {
     e.preventDefault();
     setMessage("");
     try {
-      // 1. Create the problem
+      // 1. create the problem
       const problemRes = await axios.post("/api/problems", {
         title,
         description,
@@ -51,7 +63,7 @@ function Admin() {
       });
       const problemId = problemRes.data.id;
 
-      // 2. Add test cases
+      // 2. add test cases
       for (const tc of testCases) {
         await axios.post(`/api/problems/${problemId}/testcases`, {
           input: tc.input,

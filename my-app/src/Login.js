@@ -39,7 +39,7 @@ function Login({ onLogin }) {
         placeholder="Password"
         required
       />
-      <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
+      <button type="submit" style={{ fontFamily: 'Gill Sans, "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif' }} disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
       {error && <div style={{ color: "salmon" }}>{error}</div>}
     </form>
   );
