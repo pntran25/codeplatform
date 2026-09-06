@@ -1,83 +1,114 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import logo from './asset/images/codexa.png';
+import React, { useEffect, useRef, useState } from "react";
+import { NavLink, Link } from "react-router-dom";
+import logo from "./asset/images/codexa.png";
+import userIcon from "./asset/images/user.png";
 import LoginRegister from "./LoginRegister";
+import { logout, useCurrentUser } from "./auth";
+
+const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+/**
+ * Accessible modal: traps Tab within itself, closes on Escape or backdrop click, and returns
+ * focus to whatever opened it.
+ */
+function Modal({ label, onClose, children }) {
+  const panelRef = useRef(null);
+  const openerRef = useRef(document.activeElement);
+
+  useEffect(() => {
+    const panel = panelRef.current;
+    const first = panel.querySelector(FOCUSABLE);
+    if (first) first.focus();
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const focusable = Array.from(panel.querySelectorAll(FOCUSABLE)).filter((el) => !el.disabled);
+      if (focusable.length === 0) return;
+      const firstEl = focusable[0];
+      const lastEl = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === firstEl) {
+        e.preventDefault();
+        lastEl.focus();
+      } else if (!e.shiftKey && document.activeElement === lastEl) {
+        e.preventDefault();
+        firstEl.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    const opener = openerRef.current;
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      if (opener && typeof opener.focus === "function") opener.focus();
+    };
+  }, [onClose]);
+
+  return (
+    <div className="login-overlay" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div ref={panelRef} className="login-modal" role="dialog" aria-modal="true" aria-label={label}>
+        <button type="button" onClick={onClose} className="login-modal-close" aria-label="Close">
+          &times;
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 function Header() {
   const [showLogin, setShowLogin] = useState(false);
-  const [username, setUsername] = useState(() => localStorage.getItem('username') || '');
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    setUsername('');
-  };
-
-  // Update username on login
-  const handleLogin = (uname) => {
-    setUsername(uname);
-    localStorage.setItem('username', uname);
-    setShowLogin(false);
-  };
+  const currentUser = useCurrentUser();
+  const closeLogin = React.useCallback(() => setShowLogin(false), []);
 
   return (
     <>
-      <div className="main-header">
-        <div style={{ display: 'flex', gap: 32, flex: 1 }}>
-          <Link to="/">
-            <img
-              src={logo}
-              alt='Codexa Logo'
-              style={{ width: 40, height: 40, marginTop: 16}} // moved logo down
-            />
+      <header className="main-header">
+        <nav className="header-nav" aria-label="Primary">
+          <Link to="/" className="header-logo-link" aria-label="Codexa home">
+            <img src={logo} alt="" className="header-logo" />
           </Link>
-          <Link to="/problems" className="header-tab">Problems</Link>
-        </div>
-        <div style={{ marginRight: 32, display: 'flex', gap: 16 }}>
-          {username ? (
+          <NavLink to="/problems" className="header-tab">
+            Problems
+          </NavLink>
+          {currentUser?.role === "ADMIN" && (
+            <NavLink to="/admin" className="header-tab">
+              Admin
+            </NavLink>
+          )}
+        </nav>
+        <div className="header-actions">
+          {currentUser ? (
             <>
-              <span style={{ color: '#fff', fontFamily: 'Gill Sans, "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif', fontWeight: 700, fontSize: 18, marginRight: 8, marginTop: 20 }}>
-                {username}
+              <span className="header-username" title={currentUser.username}>
+                <span className="visually-hidden">Signed in as </span>
+                {currentUser.username}
               </span>
-              <button onClick={handleLogout} style={{ background: '#23232b', color: '#fff', border: '1px solid #fff2', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>
-                Logout
+              <button type="button" onClick={logout} className="header-logout">
+                Log out
               </button>
             </>
           ) : (
-            <span
-              title="Login/Register"
-              style={{
-                cursor: 'pointer',
-                color: '#fff',
-                fontSize: 0,
-                fontFamily: 'Butch Lite',
-                fontWeight: 700,
-                letterSpacing: 1,
-                padding: '0 8px',
-                userSelect: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 36,
-                height: 36,
-
-                transition: 'background 0.2s',
-                overflow: 'hidden',
-              }}
+            <button
+              type="button"
+              className="header-login"
+              aria-label="Log in or register"
+              aria-haspopup="dialog"
               onClick={() => setShowLogin(true)}
             >
-              <img src={require('./asset/images/user.png')} alt="Login/Register" style={{ width: 42, height: 42, opacity: 0.5 }} />
-            </span>
+              <img src={userIcon} alt="" />
+            </button>
           )}
         </div>
-      </div>
+      </header>
+
       {showLogin && (
-        <div className="login-overlay">
-          <div className="login-modal">
-            <button onClick={() => setShowLogin(false)} className="login-modal-close">&times;</button>
-            <LoginRegister onLogin={handleLogin} />
-          </div>
-        </div>
+        <Modal label="Log in or register" onClose={closeLogin}>
+          <LoginRegister onLogin={closeLogin} />
+        </Modal>
       )}
     </>
   );
