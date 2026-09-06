@@ -2,6 +2,7 @@ package com.example.codeplatform.model;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,8 +28,14 @@ public class Execution {
     private Submission submission;
 
     private String language; // e.g., "python3"
+
+    @Column(columnDefinition = "TEXT")
     private String input;
+
+    @Column(columnDefinition = "TEXT")
     private String output;
+
+    @Column(columnDefinition = "TEXT")
     private String error;
     private boolean success;
     private LocalDateTime executedAt;
@@ -93,7 +100,4 @@ public class Execution {
     public void setExecutedAt(LocalDateTime executedAt) {
         this.executedAt = executedAt;
     }
-    
-
-    // getters and setters
 }

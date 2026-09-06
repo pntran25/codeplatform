@@ -1,5 +1,6 @@
 package com.example.codeplatform.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,8 +19,13 @@ public class TestCase {
     @com.fasterxml.jackson.annotation.JsonBackReference
     private Problem problem;
 
-    private String input;      // Store as JSON string or comma-separated values
-    private String expected;   // Store as string for simplicity
+    /** Comma-separated Python argument list, e.g. {@code "2,3"} or {@code "[1,2,3]"}. */
+    @Column(columnDefinition = "TEXT")
+    private String input;
+
+    /** Expected value as printed by Python, e.g. {@code "5"}. */
+    @Column(columnDefinition = "TEXT")
+    private String expected;
 
     // Getters and setters
 
@@ -34,9 +40,4 @@ public class TestCase {
 
     public String getExpected() { return expected; }
     public void setExpected(String expected) { this.expected = expected; }
-
-    // Helper to convert input string to Python args (e.g., "2,3")
-    public String getInputAsPythonArgs() {
-        return input; // If stored as "2,3", just return input
-    }
 }
