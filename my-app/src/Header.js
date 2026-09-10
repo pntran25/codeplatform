@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import logo from "./asset/images/codexa.png";
-import userIcon from "./asset/images/user.png";
 import LoginRegister from "./LoginRegister";
 import { logout, useCurrentUser } from "./auth";
 
@@ -68,8 +67,9 @@ function Header() {
     <>
       <header className="main-header">
         <nav className="header-nav" aria-label="Primary">
-          <Link to="/" className="header-logo-link" aria-label="Codexa home">
+          <Link to="/" className="header-brand" aria-label="Codexa home">
             <img src={logo} alt="" className="header-logo" />
+            <span className="header-wordmark">CODEXA</span>
           </Link>
           <NavLink to="/problems" className="header-tab">
             Problems
@@ -83,9 +83,14 @@ function Header() {
         <div className="header-actions">
           {currentUser ? (
             <>
-              <span className="header-username" title={currentUser.username}>
-                <span className="visually-hidden">Signed in as </span>
-                {currentUser.username}
+              <span className="header-user" title={currentUser.username}>
+                <span className="header-avatar" aria-hidden="true">
+                  {currentUser.username.slice(0, 1)}
+                </span>
+                <span className="header-username">
+                  <span className="visually-hidden">Signed in as </span>
+                  {currentUser.username}
+                </span>
               </span>
               <button type="button" onClick={logout} className="header-logout">
                 Log out
@@ -94,12 +99,11 @@ function Header() {
           ) : (
             <button
               type="button"
-              className="header-login"
-              aria-label="Log in or register"
+              className="button button-small"
               aria-haspopup="dialog"
               onClick={() => setShowLogin(true)}
             >
-              <img src={userIcon} alt="" />
+              Log in
             </button>
           )}
         </div>

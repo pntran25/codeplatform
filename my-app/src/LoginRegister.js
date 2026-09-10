@@ -13,8 +13,8 @@ export default function LoginRegister({ onLogin }) {
   const [notice, setNotice] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const switchMode = () => {
-    setIsLogin((wasLogin) => !wasLogin);
+  const setMode = (loginMode) => {
+    setIsLogin(loginMode);
     setError("");
     setNotice("");
   };
@@ -45,7 +45,20 @@ export default function LoginRegister({ onLogin }) {
 
   return (
     <div>
-      <h2>{isLogin ? "Log in" : "Create an account"}</h2>
+      <h2>{isLogin ? "Welcome back" : "Create an account"}</h2>
+      <p className="login-sub">
+        {isLogin ? "Log in to run code and keep your solutions." : "It takes a username and a password."}
+      </p>
+
+      <div className="auth-switch" role="group" aria-label="Log in or register">
+        <button type="button" aria-pressed={isLogin} onClick={() => setMode(true)}>
+          Log in
+        </button>
+        <button type="button" aria-pressed={!isLogin} onClick={() => setMode(false)}>
+          Register
+        </button>
+      </div>
+
       <form onSubmit={handleSubmit} noValidate>
         <div className="field">
           <label htmlFor={`${id}-username`}>Username</label>
@@ -53,6 +66,7 @@ export default function LoginRegister({ onLogin }) {
             id={`${id}-username`}
             type="text"
             autoComplete="username"
+            placeholder="your handle"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -66,12 +80,13 @@ export default function LoginRegister({ onLogin }) {
             type="password"
             autoComplete={isLogin ? "current-password" : "new-password"}
             aria-describedby={isLogin ? undefined : `${id}-password-hint`}
+            placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
           {!isLogin && (
-            <div id={`${id}-password-hint`} className="field-hint" style={{ marginTop: 6 }}>
+            <div id={`${id}-password-hint`} className="field-hint" style={{ marginTop: 8 }}>
               At least {MIN_PASSWORD_LENGTH} characters.
             </div>
           )}
@@ -87,10 +102,11 @@ export default function LoginRegister({ onLogin }) {
           </div>
         )}
         <button type="submit" style={{ width: "100%" }} disabled={submitting}>
-          {submitting ? "Please wait…" : isLogin ? "Log in" : "Register"}
+          {submitting ? "Please wait…" : isLogin ? "Log in" : "Create account"}
         </button>
       </form>
-      <button type="button" onClick={switchMode} className="login-switch">
+
+      <button type="button" onClick={() => setMode(!isLogin)} className="login-switch">
         {isLogin ? "Need an account? Register" : "Already have an account? Log in"}
       </button>
     </div>

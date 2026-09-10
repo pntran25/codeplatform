@@ -1,6 +1,17 @@
 import React from "react";
 import Header from "./Header";
 
+export function Footer() {
+  return (
+    <footer className="site-footer">
+      <div className="container">
+        <span className="footer-mark">CODEXA</span>
+        <span>Practise Python in the browser. Built with React, Spring Boot and too much coffee.</span>
+      </div>
+    </footer>
+  );
+}
+
 /** Wraps a page in the fixed header, a skip link, and the top spacing the header needs. */
 export function Page({ children, title }) {
   return (
@@ -12,6 +23,7 @@ export function Page({ children, title }) {
       <main id="main" className="page-body" tabIndex={-1} aria-label={title}>
         {children}
       </main>
+      <Footer />
     </div>
   );
 }
@@ -21,6 +33,17 @@ export function StatusMessage({ children, isError = false }) {
     <div className={`status-message${isError ? " is-error" : ""}`} role={isError ? "alert" : "status"}>
       {children}
     </div>
+  );
+}
+
+/** Placeholder rows shown while a list loads, so the layout does not jump. */
+export function SkeletonList({ rows = 5 }) {
+  return (
+    <ul className="skeleton-list" aria-hidden="true">
+      {Array.from({ length: rows }, (_, i) => (
+        <li key={i} className="skeleton" style={{ animationDelay: `${i * 0.08}s` }} />
+      ))}
+    </ul>
   );
 }
 
@@ -41,7 +64,7 @@ export function ProgressBar({ solved, total }) {
     <div className="progress" role="group" aria-label="Your progress">
       <div className="progress-label">
         <span>
-          {solved} of {total} solved
+          <strong>{solved}</strong> of {total} solved
         </span>
         <span>{pct}%</span>
       </div>
@@ -55,6 +78,16 @@ export function ProgressBar({ solved, total }) {
       >
         <div style={{ width: `${pct}%` }} />
       </div>
+    </div>
+  );
+}
+
+/** Single figure tile used above the problem list. */
+export function Stat({ value, label, tone }) {
+  return (
+    <div className={`stat${tone ? ` is-${tone}` : ""}`}>
+      <strong>{value}</strong>
+      <span>{label}</span>
     </div>
   );
 }

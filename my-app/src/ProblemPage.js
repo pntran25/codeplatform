@@ -8,6 +8,34 @@ import { DifficultyBadge, Page, StatusMessage } from "./ui";
 const DEFAULT_BODY = "    # Write your code here\n";
 const AUTOSAVE_DELAY_MS = 1200;
 
+/** Editor colours, so the code area sits in the same violet world as the rest of the page. */
+const EDITOR_THEME = {
+  base: "vs-dark",
+  inherit: true,
+  rules: [
+    { token: "comment", foreground: "6f6889", fontStyle: "italic" },
+    { token: "keyword", foreground: "c084fc" },
+    { token: "string", foreground: "86efac" },
+    { token: "number", foreground: "fbbf24" },
+    { token: "identifier", foreground: "e9e4f7" },
+    { token: "delimiter", foreground: "9b93b5" },
+  ],
+  colors: {
+    "editor.background": "#0b0814",
+    "editor.foreground": "#e9e4f7",
+    "editorLineNumber.foreground": "#4b4463",
+    "editorLineNumber.activeForeground": "#a78bfa",
+    "editor.selectionBackground": "#7c3aed55",
+    "editor.lineHighlightBackground": "#ffffff08",
+    "editorCursor.foreground": "#c4b5fd",
+    "editorIndentGuide.background1": "#ffffff10",
+    "editorIndentGuide.activeBackground1": "#a78bfa55",
+    "editorWidget.background": "#14101f",
+    "editorSuggestWidget.background": "#14101f",
+    "editorSuggestWidget.selectedBackground": "#7c3aed44",
+  },
+};
+
 /** The editor shows the signature on line 1; only the lines after it are the user's code. */
 function bodyOf(fullCode) {
   return (fullCode ?? "").split("\n").slice(1).join("\n");
@@ -141,20 +169,24 @@ export default function ProblemPage() {
   if (status === "loading") {
     return (
       <Page title="Problem">
-        <StatusMessage>Loading problem…</StatusMessage>
+        <div className="leetcode-container">
+          <StatusMessage>Loading problem…</StatusMessage>
+        </div>
       </Page>
     );
   }
   if (status !== "ready") {
     return (
       <Page title="Problem">
-        <StatusMessage isError>
-          {status === "missing" ? "That problem does not exist." : "Could not load this problem."}
-        </StatusMessage>
-        <div style={{ textAlign: "center" }}>
-          <button type="button" className="button-secondary" onClick={() => navigate("/problems")}>
-            Back to problems
-          </button>
+        <div className="leetcode-container">
+          <StatusMessage isError>
+            {status === "missing" ? "That problem does not exist." : "Could not load this problem."}
+          </StatusMessage>
+          <div style={{ textAlign: "center" }}>
+            <button type="button" className="button-secondary" onClick={() => navigate("/problems")}>
+              Back to problems
+            </button>
+          </div>
         </div>
       </Page>
     );
@@ -180,19 +212,19 @@ export default function ProblemPage() {
             <h1 className="problem-title">{problem.title}</h1>
             <DifficultyBadge difficulty={problem.difficulty} />
             {solved && (
-              <span className="badge badge-easy" aria-label="You have solved this problem">
-                ✓ Solved
+              <span className="badge badge-solved" aria-label="You have solved this problem">
+                Solved
               </span>
             )}
           </div>
           <button type="button" className="back-to-menu-btn" onClick={() => navigate("/problems")}>
-            ← Back to problems
+            ← All problems
           </button>
         </div>
 
         <div className="workspace">
           <section className="problem-section" aria-labelledby="problem-heading">
-            <h2 id="problem-heading">Problem</h2>
+            <h2 id="problem-heading">The problem</h2>
             <p className="problem-description">{problem.description}</p>
             <pre aria-label="Function signature">{signature}</pre>
             <div className="problem-note" role="note">
@@ -204,9 +236,11 @@ export default function ProblemPage() {
                 <ul className="testcase-list">
                   {problem.testCases.map((tc, i) => (
                     <li key={tc.id ?? i}>
-                      <b>Input</b> {tc.input}
+                      <b>Input</b>
+                      {tc.input}
                       <br />
-                      <b>Expected</b> {tc.expected}
+                      <b>Expected</b>
+                      {tc.expected}
                     </li>
                   ))}
                 </ul>
@@ -226,15 +260,23 @@ export default function ProblemPage() {
 
             <div className="editor-frame">
               <MonacoEditor
-                height="340px"
+                height="380px"
                 defaultLanguage="python"
                 value={`${signature}\n${functionBody}`}
                 onChange={(value) => setFunctionBody(bodyOf(value))}
-                theme="vs-dark"
+                theme="codexa"
+                beforeMount={(monaco) => monaco.editor.defineTheme("codexa", EDITOR_THEME)}
                 options={{
                   minimap: { enabled: false },
                   fontSize: 14,
+                  fontFamily: "ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas, monospace",
+                  fontLigatures: true,
+                  lineHeight: 22,
+                  padding: { top: 14, bottom: 14 },
                   scrollBeyondLastLine: false,
+                  smoothScrolling: true,
+                  cursorBlinking: "smooth",
+                  renderLineHighlight: "all",
                   tabSize: 4,
                   insertSpaces: true,
                   accessibilitySupport: "auto",
@@ -251,10 +293,10 @@ export default function ProblemPage() {
                 disabled={running || !currentUser}
                 aria-describedby="run-hint"
               >
-                {running ? "Running…" : currentUser ? "Run code" : "Log in to run code"}
+                {running ? "Running…" : currentUser ? "▶ Run code" : "Log in to run code"}
               </button>
               <button type="button" className="button-secondary button-small" onClick={handleReset}>
-                Reset to starter code
+                Reset
               </button>
               <span id="run-hint" className="kbd-hint">
                 <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to run
@@ -272,7 +314,7 @@ export default function ProblemPage() {
               </div>
 
               {allPassed && (
-                <div className="solved-banner" style={{ marginBottom: 10 }}>
+                <div className="solved-banner" style={{ marginBottom: 12 }}>
                   <span aria-hidden="true">🎉</span> All test cases pass - problem solved!
                 </div>
               )}
@@ -286,7 +328,7 @@ export default function ProblemPage() {
               {results && results.length > 0 && (
                 <ul className="results-list">
                   {results.map((r, i) => (
-                    <li key={i}>
+                    <li key={i} className={r.pass ? "is-pass" : "is-fail"} style={{ animationDelay: `${i * 0.05}s` }}>
                       <span className={`result-status ${r.pass ? "result-pass" : "result-fail"}`}>
                         {r.pass ? "PASS" : "FAIL"}
                       </span>

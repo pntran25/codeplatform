@@ -149,7 +149,11 @@ function Admin() {
     <Page title="Admin">
       <div className="leetcode-container">
         <div className="list-header">
-          <h1>Manage problems</h1>
+          <div>
+            <p className="eyebrow">Admin</p>
+            <h1>Manage problems</h1>
+            <p className="page-sub">Add, edit and retire the problems everyone sees.</p>
+          </div>
         </div>
 
         {message && (
@@ -160,7 +164,10 @@ function Admin() {
 
         <div className="admin-layout">
           <section className="admin-panel" aria-labelledby="admin-list-heading">
-            <h2 id="admin-list-heading">Existing problems</h2>
+            <h2 id="admin-list-heading">
+              Existing problems
+              {listStatus === "ready" && <span className="badge badge-neutral">{problems.length}</span>}
+            </h2>
             {listStatus === "loading" && <StatusMessage>Loading…</StatusMessage>}
             {listStatus === "error" && <StatusMessage isError>Could not load problems.</StatusMessage>}
             {listStatus === "ready" && problems.length === 0 && (
@@ -171,7 +178,8 @@ function Admin() {
                 {problems.map((p) => (
                   <li key={p.id} className={p.id === editingId ? "is-editing" : ""}>
                     <span className="admin-problem-title">
-                      {p.title} <DifficultyBadge difficulty={p.difficulty} />
+                      <span>{p.title}</span>
+                      <DifficultyBadge difficulty={p.difficulty} />
                     </span>
                     <span className="admin-problem-actions">
                       <button
@@ -237,7 +245,7 @@ function Admin() {
                   onChange={setField("functionSignature")}
                   placeholder="def add(a, b):"
                   required
-                  style={{ fontFamily: "var(--mono-font)" }}
+                  className="code"
                 />
               </div>
 
@@ -256,10 +264,8 @@ function Admin() {
                 />
               </div>
 
-              <fieldset style={{ border: "none", padding: 0, margin: "0 0 16px" }}>
-                <legend className="field-hint" style={{ color: "var(--text-soft)", fontWeight: 600, fontSize: 16, marginBottom: 4 }}>
-                  Test cases
-                </legend>
+              <fieldset>
+                <legend>Test cases</legend>
                 <p className="field-hint">
                   Input is the Python argument list, e.g. <code>[2,7,11,15], 9</code>. Expected is what the
                   function should return, as Python would print it, e.g. <code>[0, 1]</code>.

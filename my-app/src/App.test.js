@@ -22,7 +22,8 @@ beforeEach(() => {
 
 test("renders the landing page", () => {
   render(<App />);
-  expect(screen.getByText("CODEXA")).toBeInTheDocument();
+  // The wordmark also appears in the header and footer, so pin this to the hero heading.
+  expect(screen.getByRole("heading", { level: 1, name: "CODEXA" })).toBeInTheDocument();
 });
 
 test("lists problems returned by the API", async () => {
